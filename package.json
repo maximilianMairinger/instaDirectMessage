@@ -10,20 +10,20 @@
     "devWeb": "rollup --config rollup.web.dev.config.js -w",
     "devNode": "rollup --config rollup.node.dev.config.js -w",
     "deploy": "npm run build && npm publish",
-    "test": "node ./test/dist/test-bundle"
+    "repl": "node ./repl/dist/instaDirectMessage-repl"
   },
   "repository": {
     "type": "git",
     "url": "git+https://github.com/maximilianMairinger/instaDirectMessage.git"
   },
   "keywords": [
-  "insta",
-  "instagram",
-  "direct",
-  "message",
-  "send",
-  "chat"
-],
+    "insta",
+    "instagram",
+    "direct",
+    "message",
+    "send",
+    "chat"
+  ],
   "author": "Maximilian Mairinger",
   "license": "ISC",
   "bugs": {
@@ -40,5 +40,8 @@
     "tslib": "2.0.0",
     "typescript": "^3.9.5",
     "webpack-merge": "^5.0.9"
+  },
+  "dependencies": {
+    "instagram-private-api": "^1.41.0"
   }
 }
