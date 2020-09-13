@@ -1,6 +1,6 @@
 {
   "name": "insta-direct-message",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Easily send instagram direct messages.",
   "main": "app/dist/instaDirectMessage.js",
   "types": "app/dist/instaDirectMessage.d.ts",
