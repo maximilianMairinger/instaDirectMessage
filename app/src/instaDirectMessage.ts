@@ -17,8 +17,18 @@ export default async function(sender: {username: string, password: string, twoFa
     loggedInUser = await ig.account.login(sender.username, sender.password)
   }
   catch(e) {
-    console.error("Unable to log in via user \"" + sender.username + "\"")
-    throw e
+    if (e instanceof IgCheckpointError) {
+      if (sender.twoFactor === undefined) throw new Error("2Factor login required but no method of obtaining it given.")
+      else {
+        await ig.challenge.auto(true);
+        await ig.challenge.sendSecurityCode(await sender.twoFactor(sender.username))
+      }
+    }
+    else {
+      console.error("Unable to log in via user \"" + sender.username + "\"")
+      if (!sender.username.includes("@")) console.error("Try using your email instead of the username!")
+      throw e
+    }
   }
 
   async function addRecipient (recipient: {username: string}){
@@ -27,21 +37,7 @@ export default async function(sender: {username: string, password: string, twoFa
       userId = await ig.user.getIdByUsername(recipient.username);
     }
     catch(e) {
-      if (e.message.includes("challenge_required")) {
-        if (sender.twoFactor === undefined) throw new Error("2Factor login required but no method of obtaining it given.")
-        else {
-          await ig.challenge.auto(true);
-          await ig.challenge.sendSecurityCode(await sender.twoFactor(sender.username))
-        }
-        
-      }
-      else {
-        console.error("Unable to find recipient with username \"" + recipient.username + "\"")
-        if (!sender.username.includes("@")) console.error("Try using your email instead of the username!")
-        throw e
-      }
-      
-      
+      throw new Error("Unable to find recipient with username \"" + recipient.username + "\"")
     }
     
     // console.log("myuserid", userId)
