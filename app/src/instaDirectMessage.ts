@@ -27,7 +27,7 @@ export default async function(sender: {username: string, password: string, twoFa
       userId = await ig.user.getIdByUsername(recipient.username);
     }
     catch(e) {
-      if (e instanceof IgCheckpointError) {
+      if (e.message.includes("challenge_required")) {
         if (sender.twoFactor === undefined) throw new Error("2Factor login required but no method of obtaining it given.")
         else {
           await ig.challenge.auto(true);
