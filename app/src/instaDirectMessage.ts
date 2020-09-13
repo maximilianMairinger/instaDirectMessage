@@ -26,7 +26,8 @@ export default async function(sender: {username: string, password: string}, reci
       userId = await ig.user.getIdByUsername(recipient.username);
     }
     catch(e) {
-      throw new Error("Unable to find recipient with username \"" + recipient.username + "\"")
+      console.error("Unable to find recipient with username \"" + recipient.username + "\"")
+      throw e
     }
     
     // console.log("myuserid", userId)
