@@ -1,12 +1,17 @@
 import { IgApiClient, AccountRepositoryLoginResponseLogged_in_user } from "instagram-private-api";
 
-export default async function(sender: {username: string, password: string}, recipient: {username: string}) {
+
+type SendFunc = (msg: string) => Promise<void>
+
+export default async function(sender: {username: string, password: string}): Promise<(recipient: {username: string}) => Promise<SendFunc>>
+export default async function(sender: {username: string, password: string}, recipient: {username: string}): Promise<SendFunc>
+export default async function(sender: {username: string, password: string}, recipient?: {username: string}) {
   let ig = new IgApiClient()
-  console.log("init")
+  // console.log("init")
   ig.state.generateDevice(sender.username)
-  console.log("generateDevice")
+  // console.log("generateDevice")
   await ig.simulate.preLoginFlow();
-  console.log("preLoginFlow")
+  // console.log("preLoginFlow")
   let loggedInUser: AccountRepositoryLoginResponseLogged_in_user
   try {
     loggedInUser = await ig.account.login(sender.username, sender.password)
@@ -14,20 +19,25 @@ export default async function(sender: {username: string, password: string}, reci
   catch(e) {
     throw new Error("Unable to log in via user \"" + sender.username + "\"")
   }
-  
-  let userId: number
-  try {
-    userId = await ig.user.getIdByUsername(recipient.username);
-  }
-  catch(e) {
-    throw new Error("Unable to find recipient with username \"" + recipient.username + "\"")
-  }
-  
-  console.log("myuserid", userId)
-  const thread = ig.entity.directThread([userId.toString()]);
-  console.log("thread")
 
-  return async (msg: string) => {
-    await thread.broadcastText(msg);
-  }
+  async function addRecipient (recipient: {username: string}){
+    let userId: number
+    try {
+      userId = await ig.user.getIdByUsername(recipient.username);
+    }
+    catch(e) {
+      throw new Error("Unable to find recipient with username \"" + recipient.username + "\"")
+    }
+    
+    // console.log("myuserid", userId)
+    const thread = ig.entity.directThread([userId.toString()]);
+    // console.log("thread")
+
+    return async (msg: string) => {
+      await thread.broadcastText(msg);
+    }
+  }  
+  
+  if (recipient) return await addRecipient(recipient)
+  else return addRecipient
 }
