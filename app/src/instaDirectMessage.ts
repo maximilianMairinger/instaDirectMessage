@@ -17,7 +17,8 @@ export default async function(sender: {username: string, password: string}, reci
     loggedInUser = await ig.account.login(sender.username, sender.password)
   }
   catch(e) {
-    throw new Error("Unable to log in via user \"" + sender.username + "\"")
+    console.error("Unable to log in via user \"" + sender.username + "\"")
+    throw e
   }
 
   async function addRecipient (recipient: {username: string}){
